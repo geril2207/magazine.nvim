@@ -17,7 +17,7 @@ docs_view.new = function()
   self.window:option('scrolloff', 0)
   self.window:option('showbreak', 'NONE')
   self.window:option('wrap', true)
-  self.window:buffer_option('filetype', 'cmp_docs')
+  self.window:buffer_option('filetype', 'markdown')
   self.window:buffer_option('buftype', 'nofile')
   self.window.is_doc = true
   return self
@@ -52,10 +52,10 @@ docs_view.open = function(self, e, view, bottom_up)
     end
 
     self.entry = e
-    vim.api.nvim_buf_call(self.window:get_buffer(), function()
-      vim.cmd([[syntax clear]])
-      vim.api.nvim_buf_set_lines(self.window:get_buffer(), 0, -1, false, {})
-    end)
+    -- vim.api.nvim_buf_call(self.window:get_buffer(), function()
+    --   vim.cmd([[syntax clear]])
+    --   vim.api.nvim_buf_set_lines(self.window:get_buffer(), 0, -1, false, {})
+    -- end)
     local opts = {
       max_width = max_width - border_info.horiz,
     }
@@ -63,7 +63,11 @@ docs_view.open = function(self, e, view, bottom_up)
     if documentation.max_height > 0 then
       opts.max_height = documentation.max_height
     end
-    vim.lsp.util.stylize_markdown(self.window:get_buffer(), documents, opts)
+    local buf = self.window:get_buffer()
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, documents)
+    -- vim.treesitter.start(buf, 'markdown')
+    -- vim.lsp.util.stylize_markdown(self.window:get_buffer(), documents, opts)
+    -- print(vim.inspect(vim.api.nvim_buf_get_lines(buf, 0, -1, false)))
   end
 
   -- Set buffer as not modified, so it can be removed without errors
